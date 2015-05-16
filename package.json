@@ -1,0 +1,27 @@
+{
+  "name": "dice",
+  "version": "0.1.0",
+  "description": "http://stackoverflow.com/questions/1250994/parsing-dice-expressions-e-g-3d65-in-c-where-to-start?lq=1",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "dependencies": {
+    "lodash": "^3.8.0",
+    "random-js": "^1.0.4"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sterpe/dice.git"
+  },
+  "author": "Steven Terpe <srterpe@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/sterpe/dice/issues"
+  },
+  "homepage": "https://github.com/sterpe/dice"
+}
