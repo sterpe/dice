@@ -4,8 +4,37 @@ var Source = require('./lib/source').Source
 , Iterator = require('./lib/iterator').Iterator
 , die = require('./lib/die')
 , _ = require('lodash')
+, getExpression
 ;
 
+getExpression = function (normalizedList) {
+	var expression = ""
+	, l = normalizedList.length
+	, values
+	, i
+	, j
+	, k
+	, explen
+	, d
+	;
+	for (var i = 0; i < l; i++) {
+		values = normalizedList[i].values;
+		k = values.length;
+		d = normalizedList[i].d;
+		for (var j = 0; j < k; j++) {
+			explen = expression.length;
+			if (explen > 0 || values[j] < 0) {
+				expression += (explen > 0 ? " " : "") + (values[j] < 0 ? "-" : "+") + (explen > 0 ? " " : "");
+			}
+			if (d === 0) {
+				expression += "" + Math.abs(values[j]);
+			} else {
+				expression += "" + Math.abs(values[j]) + "d" + normalizedList[i].d;
+			}
+		}
+	}
+	return expression;
+};
 exports.Expression = function (exp) {
 	var s = exp === "" ? "0" : exp
 	, source = new Source(s)
@@ -15,22 +44,6 @@ exports.Expression = function (exp) {
 	, normalizedExpression
 	, condensedList = []
 	, condensedExpression
-	, getExpression = function (normalizedList, expression) {
-		expression = "";
-		for (var i = 0; i < normalizedList.length; i++) {
-			for (var j = 0; j < normalizedList[i].values.length; j++) {
-				if (expression.length > 0 || normalizedList[i].values[j] < 0) {
-					expression += (expression.length > 0 ? " " : "") + (normalizedList[i].values[j] < 0 ? "-" : "+") + (expression.length > 0 ? " " : "");
-				}
-				if (normalizedList[i].d === 0) {
-					expression += "" + Math.abs(normalizedList[i].values[j]);
-				} else {
-					expression += "" + Math.abs(normalizedList[i].values[j]) + "d" + normalizedList[i].d;
-				}
-			}
-		}
-		return expression;
-	}
 	, iterate = function (fn, thisArg) {
 		var iterator = new Iterator(parser.tokenStream)
 		, token = iterator.next()
