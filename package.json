@@ -1,7 +1,7 @@
 {
-  "name": "dice",
+  "name": "dice-expression",
   "version": "0.0.0",
-  "description": "",
+  "description": "For background see [this StackOverflow discussion](http://stackoverflow.com/questions/1250994/parsing-dice-expressions-e-g-3d65-in-c-where-to-start?lq=1).",
   "main": "index.js",
   "dependencies": {
     "dice-constants": "^0.1.3",
@@ -17,5 +17,13 @@
     "test": "jest -c .jestrc --coverage"
   },
   "author": "sterpe <srterpe@gmail.com> (https://github.com/sterpe)",
-  "license": "MIT"
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sterpe/dice-expression.git"
+  },
+  "bugs": {
+    "url": "https://github.com/sterpe/dice-expression/issues"
+  },
+  "homepage": "https://github.com/sterpe/dice-expression#readme"
 }
