@@ -44,28 +44,30 @@ function roll (expression) {
   return {
     expression: expression,
     dice: d.dice,
-    sides: d.sides,
-    roll: total,
     max: _max(d.dice, d.sides),
     min: _min(d.dice, d.sides),
+    sides: d.sides,
+    roll: total,
     rolls: rolls
   }
 }
 function DiceExpression (exp) {
   var parser = new DiceExpressionParser(exp)
   var tree = parser.parse()
-  var sum
-
-  function Iterator (fn) {
+  evaluate.max = (function () {
+    var sum = 0
     var operator = '+'
-    return function (node) {
+    visit(tree, function (node) {
+      var r
       if (node.subType === CONSTANT.OPERATOR) {
         operator = node.value
       } else if (node.subType === CONSTANT.DIE) {
         if (operator === '+') {
-          sum += fn(node.value)
+          r = roll(node.value)
+          sum += r.max
         } else {
-          sum -= fn(node.value)
+          r = roll(node.value)
+          sum -= r.max
         }
       } else {
         if (operator === '+') {
@@ -74,13 +76,65 @@ function DiceExpression (exp) {
           sum -= node.value
         }
       }
-    }
-  }
+    })
+    return sum
+  }())
+  evaluate.min = (function () {
+    var sum = 0
+    var operator = '+'
+    visit(tree, function (node) {
+      var r
+      if (node.subType === CONSTANT.OPERATOR) {
+        operator = node.value
+      } else if (node.subType === CONSTANT.DIE) {
+        if (operator === '+') {
+          r = roll(node.value)
+          sum += r.min
+        } else {
+          r = roll(node.value)
+          sum -= r.min
+        }
+      } else {
+        if (operator === '+') {
+          sum += node.value
+        } else {
+          sum -= node.value
+        }
+      }
+    })
+    return sum
+  }())
+  evaluate.rolls = []
   function evaluate () {
-    sum = 0
-    visit(tree, Iterator(function (value) {
-      return roll(value).roll
-    }))
+    var sum = 0
+    evaluate.rolls = []
+    var operator = '+'
+    visit(tree, function (node) {
+      var r
+      if (node.subType === CONSTANT.OPERATOR) {
+        operator = node.value
+      } else if (node.subType === CONSTANT.DIE) {
+        if (operator === '+') {
+          r = roll(node.value)
+          sum += r.roll
+          evaluate.rolls.push(r.rolls)
+        } else {
+          r = roll(node.value)
+          sum -= r.roll
+          evaluate.rolls.push(r.rolls.map(function (v) {
+            return v * -1
+          }))
+        }
+      } else {
+        if (operator === '+') {
+          sum += node.value
+          evaluate.rolls.push([node.value])
+        } else {
+          sum -= node.value
+          evaluate.rolls.push([-1 * node.value])
+        }
+      }
+    })
     return sum
   }
 
@@ -92,20 +146,6 @@ function DiceExpression (exp) {
     if (node.right) {
       visit(node.right, fn)
     }
-  }
-  evaluate.max = function () {
-    sum = 0
-    visit(tree, Iterator(function (value) {
-      return roll(value).max
-    }))
-    return sum
-  }
-  evaluate.min = function () {
-    sum = 0
-    visit(tree, Iterator(function (value) {
-      return roll(value).min
-    }))
-    return sum
   }
   return evaluate
 }
